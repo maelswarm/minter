@@ -33,12 +33,12 @@ import { BuyTokenButton } from '../../common/modals/BuyToken';
 import { ipfsUriToGatewayUrl } from '../../../lib/util/ipfs';
 import { useSelector, useDispatch } from '../../../reducer';
 import {
-  getContractNftsQuery,
-  getNftAssetContractQuery
+  getContractNftsQuery, getNftAssetContractQuery
 } from '../../../reducer/async/queries';
 import { NftMetadata } from '../../../lib/nfts/queries';
 
 import { Maximize2 } from 'react-feather';
+import TokenCard from '../../common/TokenCard';
 
 function NotFound() {
   return (
@@ -191,38 +191,17 @@ function TokenDetail({ contractAddress, tokenId }: TokenDetailProps) {
   const dispatch = useDispatch();
   const collection = state.collections[contractAddress];
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [zoom, setZoom] = useState(0);
+  const [, setZoom] = useState(0);
   const [initialZoom] = useState(0);
-  const [imageHeight] = useState(0);
-  const [imageWidth] = useState(0);
   const [mediaType] = useState('');
 
-  const collectionUndefined = collection === undefined;
-
   useEffect(() => {
-    if (collectionUndefined) {
+    if (!collection) {
       dispatch(getNftAssetContractQuery(contractAddress));
     } else {
       dispatch(getContractNftsQuery(contractAddress));
     }
-  }, [contractAddress, tokenId, collectionUndefined, dispatch]);
-
-  useEffect(() => {
-    const img = document.getElementById('fullScreenAssetView');
-    const wHeight = window.innerHeight;
-    const wWidth = window.innerWidth;
-    const isPortrait = wHeight > wWidth;
-
-    if (img && zoom !== 0 && zoom !== initialZoom) {
-      img.style.maxWidth = `${imageWidth}px`;
-      img.style.width = `${imageWidth * zoom}px`;
-      img.style.height = `${imageHeight * zoom}px`;
-      if (isPortrait && imageHeight > imageWidth) {
-        img.style.margin = `calc((((${imageHeight - wHeight
-          }px) / 2) * ${initialZoom} - 80px) * ${1 - zoom}) auto`;
-      }
-    }
-  }, [imageHeight, imageWidth, initialZoom, zoom]);
+  }, [contractAddress, tokenId, dispatch, collection]);
 
   if (!collection?.tokens) {
     return null;
@@ -233,10 +212,7 @@ function TokenDetail({ contractAddress, tokenId }: TokenDetailProps) {
     return <NotFound />;
   }
 
-  const isOwner =
-    system.tzPublicKey &&
-    (system.tzPublicKey === token.owner ||
-      system.tzPublicKey === token.sale?.seller);
+  const isOwner = token.owned;
 
   return (
     <Flex flexDir="column" bg="brand.brightGray" flexGrow={1}>
@@ -324,11 +300,10 @@ function TokenDetail({ contractAddress, tokenId }: TokenDetailProps) {
         maxHeight="70vh"
         flexDir="column"
       >
-        <TokenImage
-          src={ipfsUriToGatewayUrl(system.config, token.artifactUri)}
-          metadata={token.metadata}
-          height="75%"
-          width="auto"
+        <TokenCard
+          address={ipfsUriToGatewayUrl(system.config, token.artifactUri)}
+          config={system.config}
+          {...token}
         />
         <Flex align="center" justify="space-evenly" width={['90vw']} mt="4">
           {isOwner ? (
@@ -369,7 +344,7 @@ function TokenDetail({ contractAddress, tokenId }: TokenDetailProps) {
               <Flex direction="column">
                 <Flex align="center" alignSelf="center">
                   <Text color="black" fontSize="3xl" mr={1}>
-                    ꜩ
+                  &#42793;
                   </Text>
                   <Text color="brand.black" fontSize="xl" fontWeight="700">
                     {token.sale.price}
@@ -383,7 +358,7 @@ function TokenDetail({ contractAddress, tokenId }: TokenDetailProps) {
             ) : (
               <>
                 <Text color="black" fontSize={['sm', 'lg']} mr={1}>
-                {token.sale.price.toFixed(2)}ꜩ
+                {token.sale.price.toFixed(2)} &#42793;
                 </Text>
                 <BuyTokenButton contract={contractAddress} token={token} />
               </>
@@ -462,8 +437,8 @@ function TokenDetail({ contractAddress, tokenId }: TokenDetailProps) {
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel pb={4}>
-                  {token.metadata?.attributes?.map(({ name, value }) => (
-                    <Flex mt={[4, 8]}>
+                  {token.metadata?.attributes?.map(({ name, value }, idx: number) => (
+                    <Flex key={idx} mt={[4, 8]}>
                       <Text color="brand.neutralGray">{name}:</Text>
                       <Text color="brand.darkGray" fontWeight="bold" ml={[1]}>
                         {value}
