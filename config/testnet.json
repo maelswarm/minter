@@ -1,18 +1,18 @@
 {
-	"network": "florencenet",
-	"rpc": "https://api.tez.ie/rpc/florencenet",
+	"network": "granadanet",
+	"rpc": "https://api.tez.ie/rpc/granadanet",
 	"bcd": {
 		"api": "https://api.better-call.dev",
 		"gui": "https://better-call.dev"
 	},
 	"tzkt": {
-		"api": "https://api.florencenet.tzkt.io"
+		"api": "https://api.granadanet.tzkt.io"
 	},
 	"contracts": {
-		"nftFaucet": "KT1DzPX2SHnviWURFUfD5NQ9FcHQVmYFuPYu",
+		"nftFaucet": "KT1Te4g7Eok5zFzfWwmq3sCwQv7ryrHywJ5f", 
 		"marketplace": {
 			"fixedPrice": {
-				"tez": "KT1X9YgJbwhGgPcJqtvcyn6ceGeUZ7DwPsDm"
+				"tez": "KT1Te4g7Eok5zFzfWwmq3sCwQv7ryrHywJ5f"
 			}
 		}
 	},

@@ -165,8 +165,8 @@ function networkType(config: Config) {
   if (config.network === 'edo2net') {
     return NetworkType.CUSTOM;
   }
-  if (config.network === 'florencenet') {
-    return NetworkType.FLORENCENET;
+  if (config.network === 'granadanet') {
+    return NetworkType.GRANADANET;
   }
   return NetworkType.CUSTOM;
 }
